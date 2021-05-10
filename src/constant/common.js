@@ -7,4 +7,5 @@ module.exports = {
     CATEGORY_COLLECTION_NAME: "category",
     PRODUCT_COLLECTION_NAME: "products",
     USER_COLLECTION_NAME: "users",
+    ORDER_COLLECTION_NAME: "orders"
 }

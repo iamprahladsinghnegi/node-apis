@@ -16,8 +16,8 @@ const mongoose = require('mongoose');
     // }))
 
     // static 
-    // app.use('/uploads', express.static('uploads'));
-    app.use(express.static(__dirname));
+    app.use('/uploads', express.static('uploads'));
+    // app.use(express.static(__dirname));
 
     // app routes
     app.use('/', router);

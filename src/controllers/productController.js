@@ -4,6 +4,7 @@ const { body, validationResult } = require("express-validator");
 const apiResponse = require("../helpers/response");
 const generateHashId = require("../helpers/generateId");
 const upload = require("../helpers/fileUpload");
+const resizeImages = require("../helpers/resizeImage");
 
 function ProductData(data) {
     this.productId = data.productId;
@@ -24,7 +25,7 @@ exports.getAllProductsIds = [
         let response = {
             ids: [],
             count: 0
-        }
+        };
         try {
             ProductModel.find({}, { _id: 1, productId: 1 }).then((products) => {
                 if (products.length > 0) {
@@ -34,9 +35,11 @@ exports.getAllProductsIds = [
                     response.count = response.ids.length;
                 }
                 return apiResponse.successResponseWithData(res, "Operation success", response);
+            }).catch(err => {
+                return apiResponse.errorResponse(res, err.message);
             });
         } catch (err) {
-            return apiResponse.errorResponse(res, err);
+            return apiResponse.errorResponse(res, err.message);
         }
     }
 ];
@@ -52,15 +55,17 @@ exports.getAllProductsIds = [
 exports.getProductById = [
     function (req, res) {
         try {
-            let productData = {}
+            let productData = {};
             ProductModel.findOne({ productId: req.params.id }).then((product) => {
                 if (product !== null) {
                     productData = new ProductData(product);
                 }
                 return apiResponse.successResponseWithData(res, "Operation success", productData);
+            }).catch(err => {
+                return apiResponse.errorResponse(res, err.message);
             });
         } catch (err) {
-            return apiResponse.errorResponse(res, err);
+            return apiResponse.errorResponse(res, err.message);
         }
     }
 ];
@@ -79,6 +84,7 @@ exports.getProductById = [
  */
 exports.addProduct = [
     upload.array('images'),
+    resizeImages,
     body("price", "Price must not be empty.").isLength({ min: 1 }).trim().toFloat(),
     body("categories", "Provide at least one Category.").isLength({ min: 1 }),
     body("name", "Name must not be empty.").isLength({ min: 1 }).trim().custom((value, { req }) => {
@@ -96,7 +102,8 @@ exports.addProduct = [
                 return apiResponse.validationErrorWithData(res, "Validation Error.", errors.array());
             }
             else {
-                const filePath = req.files.map(x => x.path);
+                // const filePath = req.files.map(x => x.path);
+                const filePath = req.body.images;
                 const productId = generateHashId(req.body.name);
                 const product = new ProductModel(
                     {
@@ -129,10 +136,12 @@ exports.addProduct = [
                 }).then(_res => {
                     let productData = new ProductData(product);
                     return apiResponse.successResponseWithData(res, "Product added successfully", productData);
-                })
+                }).catch(err => {
+                    return apiResponse.errorResponse(res, err.message);
+                });
             }
         } catch (err) {
-            return apiResponse.errorResponse(res, err);
+            return apiResponse.errorResponse(res, err.message);
         }
     }
 ];

@@ -1,7 +1,10 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
+const CartModel = require("../models/cartModel");
+const ProductModel = require("../models/productModel");
+const UserModel = require("../models/userModel");
 
 const authUser = (req, res, next) => {
-    body("userId", "Please provide userId.").isLength({ min: 1 }).trim().custom((value, { req }) => {
+    param("id", "Please provide userId.").isLength({ min: 1 }).trim().custom((value, { req }) => {
         return UserModel.findOne({ userId: value }).then(user => {
             if (!user) {
                 return Promise.reject("User not exist.");

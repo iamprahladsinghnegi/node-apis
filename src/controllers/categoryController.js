@@ -82,9 +82,11 @@ exports.getCategoryById = [
                     categoryData = new CategoryData(category);
                 }
                 return apiResponse.successResponseWithData(res, "Operation success", categoryData);
+            }).catch(err => {
+                return apiResponse.errorResponse(res, err.message);
             });
         } catch (err) {
-            return apiResponse.errorResponse(res, err);
+            return apiResponse.errorResponse(res, err.message);
         }
     }
 ];
@@ -124,9 +126,11 @@ exports.getProductsDetailsByCategoryId = [
                 }
             ]).then((category) => {
                 return apiResponse.successResponseWithData(res, "Operation success", category);
+            }).catch(err => {
+                return apiResponse.errorResponse(res, err.message);
             });
         } catch (err) {
-            return apiResponse.errorResponse(res, err);
+            return apiResponse.errorResponse(res, err.message);
         }
     }
 ];
@@ -165,10 +169,12 @@ exports.addCategory = [
                 category.save().then(_res => {
                     let categoryData = new CategoryData(category);
                     return apiResponse.successResponseWithData(res, "Category added successfully", categoryData);
-                })
+                }).catch(err => {
+                    return apiResponse.errorResponse(res, err.message);
+                });
             }
         } catch (err) {
-            return apiResponse.errorResponse(res, err);
+            return apiResponse.errorResponse(res, err.message);
         }
     }
 ];
